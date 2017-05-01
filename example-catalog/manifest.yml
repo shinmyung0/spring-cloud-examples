@@ -1,0 +1,10 @@
+---
+applications:
+- name: example-catalog
+  path: target/example-catalog-0.0.1-SNAPSHOT.jar
+  random-route: true
+  memory: 512MB
+  instances: 2
+
+  env:
+    TRUST_CERTS: api.run.pivotal.io

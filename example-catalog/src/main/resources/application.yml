@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: create-drop
+  sleuth:
+    sampler:
+      percentage: 1.0
+server:
+  port: 8080
+
