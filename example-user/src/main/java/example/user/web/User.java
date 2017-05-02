@@ -1,6 +1,5 @@
 package example.user.web;
 
-import java.util.List;
 
 /**
  * Created by shiny on 4/25/17.
