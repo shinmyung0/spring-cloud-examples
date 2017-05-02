@@ -1,8 +1,6 @@
 package example.catalog.datamodel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by shiyoon on 4/24/17.
@@ -11,6 +9,7 @@ import javax.persistence.Table;
 @Table(name = "songs")
 public class SongEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private long artistId;
     private String title;

@@ -1,5 +1,6 @@
 package example.catalog.web;
 
+import example.catalog.EntityToDtoConverter;
 import example.catalog.datamodel.SongEntity;
 import example.catalog.datamodel.SongRepository;
 import example.catalog.exception.ResourceConflictException;
@@ -19,11 +20,15 @@ public class SongCatalogController {
 
     private SongRepository songRepository;
     private ArtistCatalogController artistCatalogController;
+    private EntityToDtoConverter entityToDtoConverter;
 
     @Autowired
-    public SongCatalogController(SongRepository songRepository, ArtistCatalogController artistCatalogController) {
+    public SongCatalogController(SongRepository songRepository,
+                                 ArtistCatalogController artistCatalogController,
+                                 EntityToDtoConverter entityToDtoConverter) {
         this.songRepository = songRepository;
         this.artistCatalogController = artistCatalogController;
+        this.entityToDtoConverter = entityToDtoConverter;
     }
 
     @GetMapping
@@ -38,7 +43,8 @@ public class SongCatalogController {
 
         List<Song> songs = new ArrayList<>();
         for (SongEntity entity : entities) {
-            Song song = convertSongFromEntity(entity);
+            Artist artist = artistCatalogController.getArtist(entity.getArtistId());
+            Song song = entityToDtoConverter.convertSongFromEntity(entity, artist);
             songs.add(song);
 
         }
@@ -55,8 +61,10 @@ public class SongCatalogController {
             throw new ResourceNotFoundException();
         }
 
+        Artist artist = artistCatalogController.getArtist(entity.getArtistId());
 
-        return convertSongFromEntity(entity);
+
+        return entityToDtoConverter.convertSongFromEntity(entity, artist);
     }
 
     @PostMapping
@@ -66,9 +74,11 @@ public class SongCatalogController {
             throw new ResourceConflictException();
         }
 
-        SongEntity registeredSong = songRepository.save(convertSongToEntity(song));
+        SongEntity registeredSong = songRepository.save(entityToDtoConverter.convertSongToEntity(song));
 
-        return convertSongFromEntity(registeredSong);
+        Artist artist = artistCatalogController.getArtist(registeredSong.getArtistId());
+
+        return entityToDtoConverter.convertSongFromEntity(registeredSong, artist);
     }
 
     @PutMapping
@@ -79,9 +89,11 @@ public class SongCatalogController {
             throw new ResourceNotFoundException();
         }
 
-        SongEntity updatedSong = songRepository.save(convertSongToEntity(song));
+        SongEntity updatedSong = songRepository.save(entityToDtoConverter.convertSongToEntity(song));
 
-        return convertSongFromEntity(updatedSong);
+        Artist artist = artistCatalogController.getArtist(updatedSong.getArtistId());
+
+        return entityToDtoConverter.convertSongFromEntity(updatedSong, artist);
     }
 
     @DeleteMapping("/{id}")
@@ -95,35 +107,6 @@ public class SongCatalogController {
 
     }
 
-    private Song convertSongFromEntity(SongEntity entity) {
 
-        if (entity == null) {
-            return null;
-        }
-
-        Song song = new Song();
-        song.setId(entity.getId());
-        Artist artist = artistCatalogController.getArtist(entity.getArtistId());
-        song.setArtist(artist);
-        song.setTitle(entity.getTitle());
-        song.setLength(entity.getLength());
-        return song;
-    }
-
-    private SongEntity convertSongToEntity(Song song) {
-
-        if (song == null) {
-            return null;
-        }
-
-        SongEntity entity = new SongEntity();
-        entity.setId(song.getId());
-        if (song.getArtist() != null) {
-            entity.setArtistId(song.getArtist().getId());
-        }
-        entity.setTitle(song.getTitle());
-        entity.setLength(song.getLength());
-        return entity;
-    }
 
 }

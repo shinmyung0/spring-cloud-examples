@@ -4,6 +4,7 @@ import example.catalog.datamodel.SongEntity;
 import example.catalog.datamodel.SongRepository;
 import example.catalog.exception.ResourceConflictException;
 import example.catalog.exception.ResourceNotFoundException;
+import example.catalog.web.Artist;
 import example.catalog.web.ArtistCatalogController;
 import example.catalog.web.Song;
 import example.catalog.web.SongCatalogController;
@@ -33,17 +34,23 @@ public class SongCatalogControllerTest {
     private SongRepository mockSongRepository;
 
     @Mock
+    private EntityToDtoConverter mockConverter;
+
+    @Mock
     private ArtistCatalogController mockArtistController;
 
     private SongCatalogController songCatalogController;
 
     @Before
     public void setUp() {
-        songCatalogController = new SongCatalogController(mockSongRepository, mockArtistController);
+        songCatalogController = new SongCatalogController(mockSongRepository, mockArtistController, mockConverter);
 
         when(mockSongRepository.findAll()).thenReturn(new ArrayList<>());
         when(mockSongRepository.findOne(VALID_SONG_ID)).thenReturn(new SongEntity());
         when(mockSongRepository.exists(VALID_SONG_ID)).thenReturn(true);
+
+        when(mockSongRepository.save(any(SongEntity.class))).thenReturn(new SongEntity());
+        when(mockArtistController.getArtist(anyLong())).thenReturn(new Artist());
     }
 
     @Test

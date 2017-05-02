@@ -33,6 +33,9 @@ public class ArtistCatalogControllerTest {
     @Mock
     private ArtistRespository mockArtistRepository;
 
+    @Mock
+    private EntityToDtoConverter mockConverter;
+
     private ArtistCatalogController artistCatalogController;
 
     private Artist validArtist = getValidArtist();
@@ -44,7 +47,7 @@ public class ArtistCatalogControllerTest {
 
     @Before
     public void setUp() {
-        artistCatalogController = new ArtistCatalogController(mockArtistRepository);
+        artistCatalogController = new ArtistCatalogController(mockArtistRepository, mockConverter);
 
         when(mockArtistRepository.findOne(VALID_ARTIST_ID)).thenReturn(validArtistEntity);
         when(mockArtistRepository.findOne(NONEXISTANT_ARTIST_ID)).thenReturn(null);

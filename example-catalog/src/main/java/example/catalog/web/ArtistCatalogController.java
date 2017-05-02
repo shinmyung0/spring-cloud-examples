@@ -1,5 +1,6 @@
 package example.catalog.web;
 
+import example.catalog.EntityToDtoConverter;
 import example.catalog.datamodel.ArtistEntity;
 import example.catalog.datamodel.ArtistRespository;
 import example.catalog.exception.ResourceConflictException;
@@ -21,10 +22,13 @@ public class ArtistCatalogController {
 
     private final ArtistRespository artistRespository;
 
+    private final EntityToDtoConverter entityToDtoConverter;
+
     private static Logger log = LoggerFactory.getLogger(ArtistCatalogController.class);
 
     @Autowired
-    public ArtistCatalogController(ArtistRespository artistRespository) {
+    public ArtistCatalogController(ArtistRespository artistRespository, EntityToDtoConverter entityToDtoConverter) {
+        this.entityToDtoConverter = entityToDtoConverter;
         this.artistRespository = artistRespository;
     }
 
@@ -37,7 +41,7 @@ public class ArtistCatalogController {
         Iterable<ArtistEntity> entities = artistRespository.findAll();
         List<Artist> allArtists = new ArrayList<>();
         for (ArtistEntity entity : entities) {
-            Artist artist = convertArtistFromEntity(entity);
+            Artist artist = entityToDtoConverter.convertArtistFromEntity(entity);
             allArtists.add(artist);
         }
         return allArtists;
@@ -51,7 +55,7 @@ public class ArtistCatalogController {
             throw new ResourceNotFoundException();
         }
 
-        return convertArtistFromEntity(artistEntity);
+        return entityToDtoConverter.convertArtistFromEntity(artistEntity);
     }
 
     @PostMapping
@@ -61,9 +65,9 @@ public class ArtistCatalogController {
             throw new ResourceConflictException();
         }
 
-        ArtistEntity saved = artistRespository.save(convertArtistToEntity(artist));
+        ArtistEntity saved = artistRespository.save(entityToDtoConverter.convertArtistToEntity(artist));
 
-        return convertArtistFromEntity(saved);
+        return entityToDtoConverter.convertArtistFromEntity(saved);
     }
 
     @PutMapping
@@ -73,8 +77,8 @@ public class ArtistCatalogController {
             throw new ResourceNotFoundException();
         }
 
-        ArtistEntity saved = artistRespository.save(convertArtistToEntity(artist));
-        return convertArtistFromEntity(saved);
+        ArtistEntity saved = artistRespository.save(entityToDtoConverter.convertArtistToEntity(artist));
+        return entityToDtoConverter.convertArtistFromEntity(saved);
     }
 
     @DeleteMapping("/{id}")
@@ -86,31 +90,5 @@ public class ArtistCatalogController {
     }
 
 
-    private Artist convertArtistFromEntity(ArtistEntity entity) {
 
-        if (entity == null) {
-            return null;
-        }
-
-        Artist artist = new Artist();
-        artist.setId(entity.getId());
-        artist.setName(entity.getName());
-        artist.setAge(entity.getAge());
-        artist.setGender(entity.getGender());
-        return artist;
-    }
-
-    private ArtistEntity convertArtistToEntity(Artist artist) {
-
-        if (artist == null) {
-            return null;
-        }
-
-        ArtistEntity entity = new ArtistEntity();
-        entity.setId(artist.getId());
-        entity.setName(artist.getName());
-        entity.setAge(artist.getAge());
-        entity.setGender(artist.getGender());
-        return entity;
-    }
 }
