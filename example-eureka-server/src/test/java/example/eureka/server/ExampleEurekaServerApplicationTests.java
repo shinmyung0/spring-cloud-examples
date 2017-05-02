@@ -1,4 +1,4 @@
-package com.example.cloud.eureka;
+package example.eureka.server;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

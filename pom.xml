@@ -27,6 +27,7 @@
     <modules>
         <module>example-catalog</module>
         <module>example-user</module>
+        <module>example-store</module>
         <module>example-eureka-server</module>
         <module>example-config-server</module>
     </modules>
